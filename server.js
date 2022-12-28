@@ -4,6 +4,8 @@ const app = express();
 const multer = require("multer");
 const { mergePdfs } = require("./merge");
 
+app.use(express.static("templates"));
+
 const upload = multer({ dest: "uploads/" });
 app.use("/static", express.static("public"));
 const port = process.env.PORT || 3000;
@@ -18,7 +20,13 @@ app.post("/merge", upload.array("pdfs", 2), async (req, res, next) => {
     path.join(__dirname, req.files[0].path),
     path.join(__dirname, req.files[1].path)
   );
-  res.redirect(`https://pdf-merger-w143.onrender.com/static/${d}.pdf`);
+
+  if (port === process.env.PORT) {
+    res.redirect(`https://pdf-merger-w143.onrender.com/static/${d}.pdf`);
+  } else {
+    res.redirect(`http://localhost:3000/static/${d}.pdf`);
+  }
+
   // res.send({data: req.files})
   // req.files is array of `photos` files
   // req.body will contain the text fields, if there were any
